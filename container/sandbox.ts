@@ -159,6 +159,7 @@ fsRoutes.get("/archive", async (c) => {
       headers: {
         "Content-Type": "application/zip",
         "Content-Disposition": "attachment; filename=app.zip",
+        "Content-Length": archive.pointer().toString(),
       },
     });
   } catch (error) {

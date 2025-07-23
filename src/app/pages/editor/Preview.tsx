@@ -39,7 +39,7 @@ export const Preview = ({ containerId }: { containerId: string }) => {
         </Button>
       </form>
 
-      <iframe src={`/preview/${containerId}${src}`} className="flex-1" />
+      {/* <iframe src={`/preview/${containerId}${src}`} className="flex-1" /> */}
     </div>
   );
 };

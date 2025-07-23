@@ -1,4 +1,4 @@
-import { FileItem, getSiblingFiles } from "./functions";
+import { type FileItem } from "./functions";
 
 import { Folder, File } from "lucide-react";
 
@@ -14,6 +14,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/app/components/ui/sidebar";
+import { ArchiveButton } from "./ArchiveButton";
 
 // TODO: Add back button
 
@@ -57,6 +58,16 @@ export async function FileBrowser({
                 )}
               </SidebarMenu>
             </SidebarGroupContent>
+          </SidebarGroup>
+          <SidebarGroup>
+            <SidebarGroupLabel>Actions</SidebarGroupLabel>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <ArchiveButton containerId={containerId} />
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>

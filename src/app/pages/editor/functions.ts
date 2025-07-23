@@ -1,5 +1,7 @@
 "use server";
 
+import { env } from "cloudflare:workers";
+
 import { fetchContainer } from "@/container";
 
 export interface FileItem {
@@ -11,7 +13,13 @@ export interface FileItem {
 async function containerFilesFetch(
   pathname: string,
   containerId: string,
-  action: "/fs/list" | "/fs/read" | "/fs/stat" | "/fs/delete" | "/fs/write",
+  action:
+    | "/fs/list"
+    | "/fs/read"
+    | "/fs/stat"
+    | "/fs/delete"
+    | "/fs/write"
+    | "/fs/archive",
   fetchOptions: RequestInit = {}
 ) {
   // NOTE: This will become a vite pluging, with __machinen/sandbox
@@ -89,4 +97,48 @@ export async function saveFile({
     method: "POST",
     body: JSON.stringify({ content }),
   });
+}
+
+export async function archiveFiles({ containerId }: { containerId: string }) {
+  try {
+    // Request zip stream from container
+    const zipResponse = await fetchContainer({
+      id: containerId,
+      request: new Request("http://localhost:8911/fs/archive", {
+        method: "GET",
+      }),
+    });
+
+    if (!zipResponse.ok) {
+      throw new Error(
+        `Container returned ${zipResponse.status}: ${zipResponse.statusText}`
+      );
+    }
+
+    const archiveId = `${Date.now()}-${crypto.randomUUID()}`;
+    const key = `archives/${containerId}/${archiveId}.zip`;
+
+    // Stream directly to R2
+    await env.BUCKET_STASH.put(key, zipResponse.body, {
+      customMetadata: {
+        containerId,
+        createdAt: new Date().toISOString(),
+      },
+    });
+
+    return {
+      archiveId,
+      key,
+    };
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to store archive");
+    // return new Response(JSON.stringify({
+    //   error: "Failed to store archive",
+    //   message: error instanceof Error ? error.message : "Unknown error",
+    // }), {
+    //   status: 500,
+    //   headers: { "Content-Type": "application/json" },
+    // });
+  }
 }

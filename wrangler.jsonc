@@ -31,5 +31,11 @@
         "name": "CONTAINER"
       }
     ]
-  }
+  },
+  "r2_buckets": [
+    {
+      "binding": "BUCKET_STASH",
+      "bucket_name": "machinen-stashes"
+    }
+  ]
 }

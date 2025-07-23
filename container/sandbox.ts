@@ -8,6 +8,8 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import * as pty from "@homebridge/node-pty-prebuilt-multiarch";
+import archiver from "archiver";
+import ignore from "ignore";
 
 const PROJECT_PATH: string = process.cwd();
 
@@ -107,6 +109,69 @@ fsRoutes.post("/write", async (c) => {
 // fsRoutes.delete("/delete", (c) => {
 //   // TODO.
 // });
+
+fsRoutes.get("/archive", async (c) => {
+  try {
+    // Read .gitignore file
+    const gitignorePath = path.join(PROJECT_PATH, ".gitignore");
+    let ig = ignore();
+
+    if (fs.existsSync(gitignorePath)) {
+      const gitignoreContent = fs.readFileSync(gitignorePath, "utf8");
+      ig = ig.add(gitignoreContent);
+    }
+
+    // Create zip archive
+    const archive = archiver("zip", { zlib: { level: 9 } });
+
+    // Add files to archive, respecting .gitignore
+    const addDirectoryToArchive = (
+      dirPath: string,
+      archivePath: string = ""
+    ) => {
+      const files = fs.readdirSync(dirPath);
+
+      for (const file of files) {
+        const fullPath = path.join(dirPath, file);
+        const relativePath = path.relative(PROJECT_PATH, fullPath);
+        const archiveFilePath = path.join(archivePath, file);
+
+        // Skip if ignored by .gitignore
+        if (ig.ignores(relativePath)) {
+          continue;
+        }
+
+        const stat = fs.statSync(fullPath);
+
+        if (stat.isDirectory()) {
+          addDirectoryToArchive(fullPath, archiveFilePath);
+        } else {
+          archive.file(fullPath, { name: archiveFilePath });
+        }
+      }
+    };
+
+    addDirectoryToArchive(PROJECT_PATH);
+    archive.finalize();
+
+    // Return zip as streaming response
+    return new Response(archive as any, {
+      headers: {
+        "Content-Type": "application/zip",
+        "Content-Disposition": "attachment; filename=app.zip",
+      },
+    });
+  } catch (error) {
+    console.error("Archive creation error:", error);
+    return c.json(
+      {
+        error: "Failed to create archive",
+        message: error instanceof Error ? error.message : "Unknown error",
+      },
+      500
+    );
+  }
+});
 
 app.route("/fs", fsRoutes);
 

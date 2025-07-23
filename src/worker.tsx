@@ -1,6 +1,7 @@
 import { defineApp } from "rwsdk/worker";
 import { route, render } from "rwsdk/router";
 import { Document } from "@/app/Document";
+import { env } from "cloudflare:workers";
 
 import { EditorPage } from "@/app/pages/editor/EditorPage";
 import { TermPage } from "@/app/pages/TermPage";
@@ -64,5 +65,51 @@ export default defineApp([
       request: new Request(url, request),
     });
     return response;
+  }),
+
+  route("/archive/:containerId", async ({ request, params }) => {
+    if (request.method !== "POST") {
+      return new Response("Method not allowed", { status: 405 });
+    }
+
+    try {
+      // Request zip stream from container
+      const zipResponse = await fetchContainer({
+        id: params.containerId,
+        request: new Request("http://localhost:8911/fs/archive", {
+          method: "GET",
+        }),
+      });
+
+      if (!zipResponse.ok) {
+        throw new Error(`Container returned ${zipResponse.status}: ${zipResponse.statusText}`);
+      }
+
+      const archiveId = `${Date.now()}-${crypto.randomUUID()}`;
+      const key = `archives/${params.containerId}/${archiveId}.zip`;
+
+      // Stream directly to R2
+      await env.BUCKET_STASH.put(key, zipResponse.body, {
+        customMetadata: {
+          containerId: params.containerId,
+          createdAt: new Date().toISOString(),
+        },
+      });
+
+      return new Response(JSON.stringify({
+        archiveId,
+        key,
+      }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error) {
+      return new Response(JSON.stringify({
+        error: "Failed to store archive",
+        message: error instanceof Error ? error.message : "Unknown error",
+      }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
   }),
 ]);

@@ -18,9 +18,7 @@ import { SessionPage } from "./app/pages/session/SessionPage";
 
 export default defineApp([
   render(Document, [
-    route("/", () => {
-      return <SessionPage />;
-    }),
+    route("/", SessionPage),
     //route("/claude", ClaudePage),
     //route("/claude/:containerId", ClaudePage),
     //// this will be the container id.

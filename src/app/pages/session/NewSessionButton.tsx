@@ -2,16 +2,6 @@
 
 //import { newInstance } from "./functions";
 
-export function NewInstanceButton() {
-  return (
-    <button
-      className="bg-blue-500 text-white p-2 rounded-md"
-      onClick={async () => {
-        console.log("######## sss");
-        //await newInstance();
-      }}
-    >
-      Start a new session
-    </button>
-  );
-}
+export const NewInstanceButton = () => {
+  return <button>New Instace</button>;
+};

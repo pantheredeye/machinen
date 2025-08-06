@@ -4,7 +4,7 @@ import { NewInstanceButton } from "./NewSessionButton";
 //
 //import { listInstances } from "@/container";
 
-export async function SessionPage() {
+export const SessionPage = () => {
   const containers = [] as string[];
 
   return (
@@ -36,4 +36,4 @@ export async function SessionPage() {
       </div>
     </div>
   );
-}
+};

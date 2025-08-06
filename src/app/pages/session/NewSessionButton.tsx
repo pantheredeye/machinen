@@ -1,5 +1,5 @@
 "use client";
 
 export const NewInstanceButton = () => {
-  return <button>New Instnace</button>;
+  return <button>New Instance</button>;
 };

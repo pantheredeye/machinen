@@ -1,25 +1,23 @@
 import { NewInstanceButton } from "./NewSessionButton";
-import { ClaudeAuth } from "./ClaudeAuth";
-import { SessionControls } from "@/app/components/SessionControls";
-
-import { listInstances } from "@/container";
+//import { ClaudeAuth } from "./ClaudeAuth";
+//import { SessionControls } from "@/app/components/SessionControls";
+//
+//import { listInstances } from "@/container";
 
 export async function SessionPage() {
-  const containers = await listInstances();
+  const containers = [] as string[];
 
   return (
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-3xl font-bold mb-8">Machinen</h1>
 
       {/* Claude Authentication Section */}
-      <div className="mb-8">
-        <ClaudeAuth />
-      </div>
+      <div className="mb-8">{/*<ClaudeAuth />*/}</div>
 
       {/* Container Sessions */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Container Sessions</h2>
-        {containers.length === 0 ? (
+        {/*containers.length === 0 ? (
           <p className="text-gray-600 mb-4">No sessions found</p>
         ) : (
           <div className="space-y-3 mb-4">
@@ -33,7 +31,7 @@ export async function SessionPage() {
               </div>
             ))}
           </div>
-        )}
+        )*/}
         <NewInstanceButton />
       </div>
     </div>

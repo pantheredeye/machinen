@@ -9,27 +9,27 @@
   },
   "observability": {
     "enabled": true
-  },
-  "containers": [
-    {
-      "name": "rwsdk",
-      "image": "./Dockerfile",
-      "class_name": "MachinenContainer",
-      "max_instances": 5
-    }
-  ],
-  "migrations": [
-    {
-      "tag": "v1",
-      "new_sqlite_classes": ["MachinenContainer"]
-    }
-  ],
-  "durable_objects": {
-    "bindings": [
-      {
-        "class_name": "MachinenContainer",
-        "name": "CONTAINER"
-      }
-    ]
   }
+  //"containers": [
+  //  {
+  //    "name": "rwsdk",
+  //    "image": "./Dockerfile",
+  //    "class_name": "MachinenContainer",
+  //    "max_instances": 5
+  //  }
+  //],
+  //"migrations": [
+  //  {
+  //    "tag": "v1",
+  //    "new_sqlite_classes": ["MachinenContainer"]
+  //  }
+  //]
+  //"durable_objects": {
+  //  "bindings": [
+  //    {
+  //      "class_name": "MachinenContainer",
+  //      "name": "CONTAINER"
+  //    }
+  //  ]
+  //}
 }

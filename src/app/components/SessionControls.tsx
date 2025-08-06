@@ -38,9 +38,9 @@ async function InstanceStatus({ containerId }: { containerId: string }) {
 export function SessionControls({ containerId }: { containerId: string }) {
   return (
     <>
-      <Suspense fallback={<Loading />}>
-        <InstanceStatus containerId={containerId} />
-      </Suspense>
+      {/*<Suspense fallback={<Loading />}>*/}
+      <InstanceStatus containerId={containerId} />
+      {/*</Suspense>*/}
     </>
   );
 }
